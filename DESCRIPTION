@@ -1,0 +1,24 @@
+Package: chemunits
+Title: What the Package Does (One Line, Title Case)
+Version: 0.0.0.9000
+Authors@R: 
+    person(
+        given = "Sebastian", family = "Kopf",
+        email = "sebastian.kopf@colorado.edu",
+        role = c("aut", "cre", "cph"),
+        comment = c(ORCID = "0000-0002-2044-0201"))
+Description: What the package does (one paragraph).
+URL: https://github.com/kopflab/chemunits, http://www.kopflab.org/chemunits/
+BugReports: https://github.com/kopflab/chemunits/issues
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3
+Depends:
+    R (>= 4.1.0)
+Imports:
+    stats (>= 4.1.0),
+    units (>= 0.8.5)
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
