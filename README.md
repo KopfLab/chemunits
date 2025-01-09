@@ -4,6 +4,9 @@
 # chemunits
 
 <!-- badges: start -->
+
+[![Codecov test
+coverage](https://codecov.io/gh/KopfLab/chemunits/graph/badge.svg)](https://app.codecov.io/gh/KopfLab/chemunits)
 <!-- badges: end -->
 
 The goal of chemunits is to …
