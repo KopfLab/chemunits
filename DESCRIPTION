@@ -21,7 +21,7 @@ Imports:
     rlang,
     cli,
     lifecycle,
-    stats (>= 4.1.0),
+    stats,
     vctrs (>= 0.6.5)
 Suggests: 
     testthat (>= 3.0.0)
