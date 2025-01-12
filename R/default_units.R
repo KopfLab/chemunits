@@ -1,6 +1,6 @@
 #' automatically convert to default units if any fit (`defaults` would be an option in units_options)
 #' @export
-convert_to_default_units <- function(x, defaults = c("mol", "M", "L", "1")) {
+convert_to_default_units <- function(x, defaults = get_chemunits_option("default_units")) {
   # safety check
   stopifnot(
     "`x` has to have units" = !missing(x) && is(x, "units"),
