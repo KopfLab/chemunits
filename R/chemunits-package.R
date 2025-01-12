@@ -13,6 +13,7 @@
 #' @import rlang
 #' @import cli
 #' @import vctrs
+#' @import units
 ## usethis namespace: end
 NULL
 
