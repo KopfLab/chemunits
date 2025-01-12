@@ -15,7 +15,7 @@ define_pkg_option <- function(default = NULL, check_fn = NULL) {
   check_fn <- eval_tidy(check_fn_quo)
   if(!is.null(check_fn)) {
     if (!is_function(check_fn))
-      cli_abort("{.var check} must be a function but is {.obj_type_friendly {check}}")
+      cli_abort("{.var check_fn} must be a function but is {.obj_type_friendly {check_fn}}")
     if(!is.null(default))
       check_option_value("", default, check_fn_quo)
   }
@@ -23,7 +23,7 @@ define_pkg_option <- function(default = NULL, check_fn = NULL) {
 }
 
 # get package option value (akin to base::getOption)
-get_pkg_option <- function(option, pkg, pkg_options, call = caller_env()) {
+get_pkg_option <- function(option, pkg, pkg_options = list(), call = caller_env()) {
   if (!option %in% names(pkg_options)) {
     cli::cli_abort("option {.emph {option}} is not defined for
                    the {.pkg {pkg}} package", call = call)
@@ -40,7 +40,7 @@ get_pkg_option <- function(option, pkg, pkg_options, call = caller_env()) {
 }
 
 # set package option value
-set_pkg_option <- function(option, value, pkg, pkg_options, call = caller_env()) {
+set_pkg_option <- function(option, value, pkg, pkg_options = list(), call = caller_env()) {
   if (!option %in% names(pkg_options)) {
     cli::cli_abort("option {.emph {option}} is not defined for
                    the {.pkg {pkg}} package", call = call)
@@ -59,7 +59,7 @@ set_pkg_option <- function(option, value, pkg, pkg_options, call = caller_env())
 }
 
 # package options (akin to base::options)
-pkg_options <- function(pkg, pkg_options, ..., call = caller_env()) {
+pkg_options <- function(pkg, pkg_options = list(), ..., call = caller_env()) {
   dots <- dots_list(...)
   if(length(dots) == 0) {
     options <- names(pkg_options) # get all
