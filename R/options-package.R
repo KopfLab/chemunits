@@ -1,6 +1,3 @@
-# install non-standard units
-units::install_unit("M", "mol/L", "molarity")
-
 # TODO: update documentation
 #' Package options
 #' 
@@ -30,13 +27,31 @@ units::install_unit("M", "mol/L", "molarity")
 #' # view() would show the default 1000 rows e.g. for a lazy data frame
 #' @export
 chemunits_options <- function(...) {
-  pkg_options(pkg = "chemunits", pkg_options = .pkg_options, ...)
+  pkg_options(pkg = "chemunits", pkg_options = get_pkg_options(), ...)
 }
 
 #' @rdname chemunits_options
 #' @export 
 get_chemunits_option <- function(x) {
-  get_pkg_option(option = x, pkg = "chemunits", pkg_options = .pkg_options)
+  get_pkg_option(option = x, pkg = "chemunits", pkg_options = get_pkg_options())
+}
+
+#' @rdname chemunits_options
+#' @format NULL
+#' @usage NULL
+#' @section Options for the chemunits package:
+get_pkg_options <- function() {
+  list(
+    #' - `default_units`: Maximum number of rows shown by [view()]
+    #'   if the input is not a data frame, passed on to [head()]. Default: `1000`.
+    #'   the order does not matter except if units can be inter converted from each other in which case the first one will be used (with a warning)
+    default_units = define_pkg_option(
+      default = c("mol", "M", "L", "1"), check_fn = do_units_exist),
+    #' - `auto_scale_units`: Maximum number of rows shown by [view()]
+    #'   if the input is not a data frame, passed on to [head()]. Default: `1000`.
+    auto_scale_units = define_pkg_option(
+      default = c("mol", "M", "L"), check_fn = do_units_exist)
+  )
 }
 
 # units check function for options
@@ -47,19 +62,3 @@ do_units_exist <- function(x) {
   sapply(x, set_units, x = 0, mode = "standard")
   return(TRUE)
 }
-
-#' @rdname chemunits_options
-#' @format NULL
-#' @usage NULL
-#' @section Options for the chemunits package:
-.pkg_options <- list(
-  #' - `default_units`: Maximum number of rows shown by [view()]
-  #'   if the input is not a data frame, passed on to [head()]. Default: `1000`.
-  #'   the order does not matter except if units can be inter converted from each other in which case the first one will be used (with a warning)
-  default_units = define_pkg_option(
-    default = c("mol", "M", "L", "1"), check_fn = do_units_exist),
-  #' - `auto_scale_units`: Maximum number of rows shown by [view()]
-  #'   if the input is not a data frame, passed on to [head()]. Default: `1000`.
-  auto_scale_units = define_pkg_option(
-    default = c("mol", "M", "L"), check_fn = do_units_exist)
-)

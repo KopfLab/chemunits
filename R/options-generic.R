@@ -1,8 +1,8 @@
 # functions for generic package options with type checking
 # implement by writing a package specific get_<pkg>_option function that 
 # calls get_pkg_option and a <pkg>_options function that calls pkg_options
-# in addition to defining a package option list that is passed to these, e.g.
-# .pkg_options <- list(option_a = define_pkg_option(), option_b = ...)
+# in addition to defining a static list or get_package_options() function that
+# returns a list e.g. `list(option_a = define_pkg_option(), option_b = ...)`
 # requires rlang and cli imports
 
 # define package options, checks that check_fn is indeed a 
