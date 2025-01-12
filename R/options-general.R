@@ -19,7 +19,12 @@ define_pkg_option <- function(default = NULL, check_fn = NULL) {
     if(!is.null(default))
       check_option_value("", default, check_fn_quo)
   }
-  list(default = default, check_fn_quo = check_fn_quo)
+  # return option info
+  option <- list()
+  if (!is.null(default)) option$default <- default
+  if (!is.null(check_fn)) option$check_fn_quo <- check_fn_quo
+  
+  return(option)
 }
 
 # get package option value (akin to base::getOption)
@@ -31,7 +36,7 @@ get_pkg_option <- function(option, pkg, pkg_options = list(), call = caller_env(
   value <- sprintf("%s.%s", pkg, option) |> getOption()
   
   # check in case user used base::options to set this option directly
-  if (!is.null(value) && !quo_is_null(pkg_options[[option]]$check_fn_quo))
+  if (!is.null(value) && !is.null(pkg_options[[option]]$check_fn_quo))
     check_option_value(option, value, pkg_options[[option]]$check_fn_quo, call = call)
   
   # default value
@@ -51,7 +56,7 @@ set_pkg_option <- function(option, value, pkg, pkg_options = list(), call = call
     value <- NULL # reset back to default value
   
   # check to make sure new value is appropriate
-  if (!is.null(value) && !quo_is_null(pkg_options[[option]]$check_fn_quo))
+  if (!is.null(value) && !is.null(pkg_options[[option]]$check_fn_quo))
     check_option_value(option, value, pkg_options[[option]]$check_fn_quo, call = call)
   
   # set new value
@@ -67,11 +72,11 @@ pkg_options <- function(pkg, pkg_options = list(), ..., call = caller_env()) {
   } else {
     if(length(dots) == 1L && is_bare_list(dots[[1]])) dots <- dots[[1]]
     new_values_idx <- nchar(names(dots)) > 0L
-    names(dots[!new_values_idx]) <- dots[!new_values_idx]
+    names(dots)[!new_values_idx] <- sapply(dots[!new_values_idx], identity)
     options <- names(dots)
   }
   # retrieve original values
-  old_values <- sapply(options, get_pkg_option, 
+  old_values <- sapply(options, get_pkg_option, simplify = FALSE,
                        pkg = pkg, pkg_options = pkg_options, call = call)
   
   # set new values

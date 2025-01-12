@@ -26,3 +26,23 @@
       i `default` is an integer
       x the check function `function(x) return(FALSE)` returned FALSE for this value
 
+# functionality works
+
+    Code
+      set_pkg_option("c", "42", "pkg", .options)
+    Condition
+      Error:
+      ! invalid value for option c
+      i `value` is a string
+      x the check function `is_integerish` returned FALSE for this value
+
+---
+
+    Code
+      get_pkg_option("c", "pkg", .options)
+    Condition
+      Error:
+      ! invalid value for option c
+      i `value` is a string
+      x the check function `is_integerish` returned FALSE for this value
+
