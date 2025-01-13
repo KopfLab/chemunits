@@ -39,7 +39,7 @@ as_chemunits <- function(x = double(), ..., convert_to_default = FALSE, auto_sca
   x <- add_chemunits_class(x)
 
   # convert to default units
-  if (convert_to_default) x <- convert_to_default_units(x)
+  if (convert_to_default) x <- convert_to_preferred_units(x)
 
   # autoscale units
   if (auto_scale) x <- auto_scale_units(x)
@@ -278,7 +278,7 @@ Ops.chemunits <- function(e1, e2) {
       # units have changed --> convert to default units
       x <- x |>
         add_chemunits_class() |>
-        convert_to_default_units() |>
+        convert_to_preferred_units() |>
         auto_scale_units()
     }
   }

@@ -7,7 +7,7 @@
 #' # Default setting(s):
 #' old <- chemunits_options()
 #' old # original options
-#' get_chemunits_option("default_units")
+#' get_chemunits_option("preferred_units")
 #'
 #' # with this, there is no default unit defined for energy or volume
 #' # so the units are not simplified
@@ -18,16 +18,16 @@
 #' set_cu(1, "W*s") / set_cu(1, "J")
 #'
 #' # Change for the duration of the session:
-#' chemunits_options(default_units = c("J", "L"))
+#' chemunits_options(preferred_units = c("J", "L"))
 #'
 #' # now W*s is recognized as energy and cm mm^2 as a volume and both are
 #' # automatically converted to the specified default units
 #' set_cu(100, "W") * set_cu(1, "s")
 #' set_cu(1, "m") * set_cu(1, "mm^2")
 #' 
-#' # however since "1" was no longer included in the `default_units`, 
+#' # however since "1" was no longer included in the `preferred_units`, 
 #' # dimensionless units were no longer simplified (thus it is advisable
-#' # to always include "1" in the `default_units` option)
+#' # to always include "1" in the `preferred_units` option)
 #' set_cu(1, "W*s") / set_cu(1, "J")
 #'
 #' # Restore original values
@@ -54,8 +54,8 @@ get_chemunits_option <- function(x) {
 #' @section Options for the chemunits package:
 get_pkg_options <- function() {
   list(
-    #' - `default_units` (character vector of units): the default units that new units (i.e. resulting from calculations) should be converted to. Default: `"1"` (i.e. units that cancel themselves and should be dimensionless are converted to unitless). The order does not matter except if units can be interconverted from each other (e.g. `"L"` and `"m^3"`) in which case the first one will be used (with a warning).
-    default_units = define_pkg_option(
+    #' - `preferred_units` (character vector of units): the default units that new units (i.e. resulting from calculations) should be converted to. Default: `"1"` (i.e. units that cancel themselves and should be dimensionless are converted to unitless). The order does not matter except if units can be interconverted from each other (e.g. `"L"` and `"m^3"`) in which case the first one will be used (with a warning).
+    preferred_units = define_pkg_option(
       default = c("mol", "M", "L", "1"), check_fn = do_units_exist
     ),
     #' - `auto_scale_units` (character vector of units): the units whose best SI prefix (e.g. nano/n, micro/u, milli/m, kilo/k, etc) should be determined automatically based on the median value of a vector in this unit. Default: `character(0)` (i.e. no units are automatically scaled).

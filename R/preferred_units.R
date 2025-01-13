@@ -2,7 +2,7 @@
 #' @param x units object
 #' @param defaults default units to convert to
 #' @export
-convert_to_default_units <- function(x, defaults = get_chemunits_option("default_units")) {
+convert_to_preferred_units <- function(x, defaults = get_chemunits_option("preferred_units")) {
   # safety check
   stopifnot(
     "`x` has to have units" = !missing(x) && is(x, "units"),
