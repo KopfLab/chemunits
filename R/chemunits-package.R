@@ -14,6 +14,7 @@
 #' @import cli
 #' @import vctrs
 #' @import units
+#' @importFrom stats median weighted.mean
 ## usethis namespace: end
 NULL
 
