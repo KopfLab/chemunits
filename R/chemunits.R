@@ -73,7 +73,7 @@ vec_proxy.chemunits = function(x, ...) x
 
 #' @export
 vec_restore.chemunits = function(x, to, ...) {
-  units:::restore_units(x, to) |> add_chemunits_class()
+  NextMethod() |> add_chemunits_class()
 }
 
 #' @export
@@ -195,7 +195,7 @@ diff.chemunits <- function(x, ...) {
   NextMethod() |> add_chemunits_class() |> auto_scale_units()
 }
 
-# S3 base::min/max/sum/range/mean/median/quantile/Math/Ops / stats::weighted.mean ----------
+# S3 base::min/max/sum/range/mean/Math/Ops / stats::median/quantile/weighted.mean ----------
 
 # auto scale after all these operations
 # Summary = min/max/sum/range
