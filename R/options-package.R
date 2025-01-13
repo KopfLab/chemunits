@@ -1,13 +1,14 @@
 # TODO: update documentation
 #' Package options
-#' 
+#'
 #' These options are best set via [chemunits_options()] and queried via [get_chemunits_option()]. However, the base functions [options()] and [getOption()] work as well but require a `chemunits.` prefix (the package name and a dot) for the option name. Setting an option to a value of `NULL` means that the default is used.
 #'
 #' @examples
 #' # Default setting(s):
-#' old <- chemunits_options(); old # original options
+#' old <- chemunits_options()
+#' old # original options
 #' get_chemunits_option("default_units")
-#' 
+#'
 #' # with this, there is no default unit defined for energy or volume so the units are not simplified
 #' set_cu(100, "W") * set_cu(1, "s")
 #' set_cu(1, "m") * set_cu(1, "mm^2")
@@ -32,7 +33,7 @@ chemunits_options <- function(...) {
 }
 
 #' @rdname chemunits_options
-#' @export 
+#' @export
 get_chemunits_option <- function(x) {
   get_pkg_option(option = x, pkg = "chemunits", pkg_options = get_pkg_options())
 }
@@ -45,18 +46,21 @@ get_pkg_options <- function() {
   list(
     #' - `default_units` (character vector of units): the default units that new units (i.e. resulting from calculations) should be converted to. Default: `"1"` (i.e. units that cancel themselves and should be dimensionless are converted to unitless). The order does not matter except if units can be interconverted from each other (e.g. `"L"` and `"m^3"`) in which case the first one will be used (with a warning).
     default_units = define_pkg_option(
-      default = c("mol", "M", "L", "1"), check_fn = do_units_exist),
+      default = c("mol", "M", "L", "1"), check_fn = do_units_exist
+    ),
     #' - `auto_scale_units` (character vector of units): the units whose best SI prefix (e.g. nano/n, micro/u, milli/m, kilo/k, etc) should be determined automatically based on the median value of a vector in this unit. Default: `character(0)` (i.e. no units are automatically scaled).
     auto_scale_units = define_pkg_option(
-      default = c("mol", "M", "L"), check_fn = do_units_exist)
+      default = c("mol", "M", "L"), check_fn = do_units_exist
+    )
   )
 }
 
 # units check function for options
 do_units_exist <- function(x) {
-  if(!is_character(x)) 
-    cli_abort("units must be provided as character vector, 
+  if (!is_character(x)) {
+    cli_abort("units must be provided as character vector,
               not {.obj_type_friendly {x}}")
+  }
   sapply(x, set_units, x = 0, mode = "standard")
   return(TRUE)
 }

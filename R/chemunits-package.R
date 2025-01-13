@@ -1,7 +1,7 @@
 #' @details
 #' `r lifecycle::badge("experimental")`
 #'
-#' The chemunits package augments the units package for use in chemistry calculations. 
+#' The chemunits package augments the units package for use in chemistry calculations.
 #'
 #' Resources:
 #'   * Website for the chemunits package: <https://chemunits.kopflab.org>

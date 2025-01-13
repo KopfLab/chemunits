@@ -11,12 +11,15 @@ methods::setOldClass(c("chemunits", "vctrs_vctr"))
 #' @examples
 #' set_chemunits(c(0.25, 0.5, 0.75))
 set_chemunits <- function(x, units, ..., convert_to_default = FALSE, auto_scale = TRUE) {
-  x |> 
+  x |>
     # use quo and tidy eval to accommodate both standard and NSE
     units::set_units(!!enexpr(units), !!!enquos(...)) |>
-    quo() |> eval_tidy() |>
-    as_chemunits(convert_to_default = convert_to_default, 
-                 auto_scale = auto_scale)
+    quo() |>
+    eval_tidy() |>
+    as_chemunits(
+      convert_to_default = convert_to_default,
+      auto_scale = auto_scale
+    )
 }
 
 #' @describeIn set_chemunits short-form for the `set_chemunits` function
@@ -28,22 +31,22 @@ set_cu <- set_chemunits
 #' @keywords internal
 as_chemunits <- function(x = double(), ..., convert_to_default = FALSE, auto_scale = TRUE) {
   # if not `units`, convert to units and add `chemunits` class
-  if(!is(x, "units")) x <- units::as_units(x, ...)
+  if (!is(x, "units")) x <- units::as_units(x, ...)
   x <- add_chemunits_class(x)
-  
+
   # convert to default units
   if (convert_to_default) x <- convert_to_default_units(x)
-  
+
   # autoscale units
   if (auto_scale) x <- auto_scale_units(x)
-  
+
   return(x)
 }
 
 # convenience function
 add_chemunits_class <- function(x) {
   stopifnot(is(x, "units"))
-  if(!is(x, "chemunits")) class(x) <- c("chemunits", class(x))
+  if (!is(x, "chemunits")) class(x) <- c("chemunits", class(x))
   return(x)
 }
 
@@ -54,13 +57,14 @@ add_chemunits_class <- function(x) {
 #' @export
 get_chemvalue <- function(cu, units, ...) {
   check_required(cu)
-  if (missing(units))
+  if (missing(units)) {
     cli_abort(
       "{.var units} must be specified when retrieving a chemvalue to ensure
       the numbers you are working with afterwards are exactly in the units
       you expect them to be",
       "i" = "while using {.var as.numeric()} works, it is not recommended"
     )
+  }
 }
 
 #' @export
@@ -69,10 +73,10 @@ get_cv <- get_chemvalue
 # S3 vctrs::vec_proxy/vec_restore/vec_ptype2/vec_cast -----------
 
 #' @export
-vec_proxy.chemunits = function(x, ...) x
+vec_proxy.chemunits <- function(x, ...) x
 
 #' @export
-vec_restore.chemunits = function(x, to, ...) {
+vec_restore.chemunits <- function(x, to, ...) {
   NextMethod() |> add_chemunits_class()
 }
 
@@ -81,15 +85,15 @@ vec_ptype2.chemunits.chemunits <- function(x, y, ...) {
   # make error clearer when units are not interconvertible
   # note: there's no way to find auto-scale prefix (x/y don't have numbers)
   # see issue #2
-  ptype2 <- 
+  ptype2 <-
     try_fetch(
       vctrs::vec_ptype2(units::as_units(x), units::as_units(y), ...) |>
         add_chemunits_class(),
       vctrs_error = function(cnd) {
         cli_abort(
-          "there was a problem trying to combine two different units:  
-          {.emph {as.character(units(x))}} and 
-          {.emph {as.character(units(y))}} are not interconvertible", 
+          "there was a problem trying to combine two different units:
+          {.emph {as.character(units(x))}} and
+          {.emph {as.character(units(y))}} are not interconvertible",
           parent = cnd
         )
       }
@@ -163,7 +167,9 @@ c.chemunits <- function(...) {
 #' @export
 as.list.chemunits <- function(x, ...) {
   # autoscale when splitting into a list
-  NextMethod() |> lapply(add_chemunits_class) |> lapply(auto_scale_units)
+  NextMethod() |>
+    lapply(add_chemunits_class) |>
+    lapply(auto_scale_units)
 }
 
 #' @export
@@ -176,23 +182,29 @@ as.data.frame.chemunits <- function(x, ...) {
 # S3 base::print/format -----------
 
 #' @export
-print.chemunits <- function (x, ...) { 
+print.chemunits <- function(x, ...) {
   if (is.array(x) || length(x) > 1L) cat("Chem")
-  NextMethod() 
+  NextMethod()
 }
 
 #' @export
-format.chemunits <- function(x, ...) { NextMethod() }
+format.chemunits <- function(x, ...) {
+  NextMethod()
+}
 
 # S3 base::rep/diff ---------
 
 #' @export
-rep.chemunits <- function(x, ...) { NextMethod() |> add_chemunits_class() }
+rep.chemunits <- function(x, ...) {
+  NextMethod() |> add_chemunits_class()
+}
 
 #' @export
-diff.chemunits <- function(x, ...) { 
+diff.chemunits <- function(x, ...) {
   # autoscale after taking the difference
-  NextMethod() |> add_chemunits_class() |> auto_scale_units()
+  NextMethod() |>
+    add_chemunits_class() |>
+    auto_scale_units()
 }
 
 # S3 base::min/max/sum/range/mean/Math/Ops / stats::median/quantile/weighted.mean ----------
@@ -200,31 +212,45 @@ diff.chemunits <- function(x, ...) {
 # auto scale after all these operations
 # Summary = min/max/sum/range
 #' @export
-Summary.chemunits <- function(..., na.rm = FALSE) { 
-  NextMethod() |> add_chemunits_class() |> auto_scale_units()
+Summary.chemunits <- function(..., na.rm = FALSE) {
+  NextMethod() |>
+    add_chemunits_class() |>
+    auto_scale_units()
 }
 #' @export
-mean.chemunits <- function(x, ...) { 
-  NextMethod() |> add_chemunits_class() |> auto_scale_units()
+mean.chemunits <- function(x, ...) {
+  NextMethod() |>
+    add_chemunits_class() |>
+    auto_scale_units()
 }
 #' @export
-median.chemunits <- function(x, ...) { 
-  NextMethod() |> add_chemunits_class() |> auto_scale_units()
+median.chemunits <- function(x, ...) {
+  NextMethod() |>
+    add_chemunits_class() |>
+    auto_scale_units()
 }
 #' @export
-weighted.mean.chemunits <- function(x, w, ...) { 
-  NextMethod() |> add_chemunits_class() |> auto_scale_units()
+weighted.mean.chemunits <- function(x, w, ...) {
+  NextMethod() |>
+    add_chemunits_class() |>
+    auto_scale_units()
 }
 #' @export
-quantile.chemunits <- function(x, ...) { 
-  NextMethod() |> add_chemunits_class() |> auto_scale_units()
+quantile.chemunits <- function(x, ...) {
+  NextMethod() |>
+    add_chemunits_class() |>
+    auto_scale_units()
 }
 
 # Math = abs/sign/floor/etc
 #' @export
 Math.chemunits <- function(x, ...) {
   x <- NextMethod()
-  if(is(x, "units")) x <- x |> add_chemunits_class() |> auto_scale_units()
+  if (is(x, "units")) {
+    x <- x |>
+      add_chemunits_class() |>
+      auto_scale_units()
+  }
   return(x)
 }
 
@@ -237,11 +263,15 @@ Ops.chemunits <- function(e1, e2) {
     e2_same_units <- !is(e2, "units") || identical(units(x), units(e2))
     if (e1_same_units && e2_same_units) {
       # units have not changed --> autoscale only
-      x <- x |> add_chemunits_class() |> auto_scale_units()
+      x <- x |>
+        add_chemunits_class() |>
+        auto_scale_units()
     } else {
       # units have changed --> convert to default units
-      x <- x |> add_chemunits_class() |> 
-        convert_to_default_units() |> auto_scale_units()
+      x <- x |>
+        add_chemunits_class() |>
+        convert_to_default_units() |>
+        auto_scale_units()
     }
   }
   return(x)
