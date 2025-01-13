@@ -10,11 +10,13 @@
 "_PACKAGE"
 
 ## usethis namespace: start
-#' @import rlang
 #' @import cli
-#' @import vctrs
+#' @import rlang
 #' @import units
-#' @importFrom stats median weighted.mean
+#' @import vctrs
+#' @importFrom lifecycle deprecated
+#' @importFrom methods is
+#' @importFrom stats median weighted.mean quantile
 ## usethis namespace: end
 NULL
 

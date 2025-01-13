@@ -22,6 +22,7 @@ Imports:
     cli,
     lifecycle,
     stats,
+    methods,
     vctrs (>= 0.6.5)
 Suggests: 
     testthat (>= 3.0.0)
