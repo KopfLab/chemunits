@@ -1,5 +1,7 @@
 #' automatically scale numerators to the best udunits prefix if x has units
 #' that are listed in the scalable_units
+#' @param x a units object
+#' @param scalable_units a vector of scalable units
 #' @export
 auto_scale_units <- function(
     x, scalable_units = get_chemunits_option("auto_scale_units")) {

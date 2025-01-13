@@ -9,30 +9,40 @@
 #' old # original options
 #' get_chemunits_option("default_units")
 #'
-#' # with this, there is no default unit defined for energy or volume so the units are not simplified
+#' # with this, there is no default unit defined for energy or volume
+#' # so the units are not simplified
 #' set_cu(100, "W") * set_cu(1, "s")
 #' set_cu(1, "m") * set_cu(1, "mm^2")
+#' 
 #' # however the default does simplify dimensionless units
 #' set_cu(1, "W*s") / set_cu(1, "J")
 #'
 #' # Change for the duration of the session:
 #' chemunits_options(default_units = c("J", "L"))
 #'
-#' # now W*s is recognized as energy and cm mm^2 as a volume and both are automatically converted to the specified default units
+#' # now W*s is recognized as energy and cm mm^2 as a volume and both are
+#' # automatically converted to the specified default units
 #' set_cu(100, "W") * set_cu(1, "s")
 #' set_cu(1, "m") * set_cu(1, "mm^2")
-#' # however since "1" was no longer included in the `default_units`, dimensionless units were no longer simplified (thus it is advisable to always include "1" in the `default_units` option)
+#' 
+#' # however since "1" was no longer included in the `default_units`, 
+#' # dimensionless units were no longer simplified (thus it is advisable
+#' # to always include "1" in the `default_units` option)
 #' set_cu(1, "W*s") / set_cu(1, "J")
 #'
 #' # Restore original values
 #' chemunits_options(old)
 #'
+#' @param ... set package options, syntax identical to [options()]
+#' @describeIn chemunits_options set option values
 #' @export
 chemunits_options <- function(...) {
   pkg_options(pkg = "chemunits", pkg_options = get_pkg_options(), ...)
 }
 
-#' @rdname chemunits_options
+
+#' @describeIn chemunits_options retrieve the current value of an option
+#' @param x name of the option to retrieve
 #' @export
 get_chemunits_option <- function(x) {
   get_pkg_option(option = x, pkg = "chemunits", pkg_options = get_pkg_options())

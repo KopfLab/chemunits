@@ -6,14 +6,17 @@ methods::setOldClass(c("chemunits", "vctrs_vctr"))
 #' `chemunits` vector
 #'
 #' @param x A numeric vector
+#' @param units units
+#' @param convert_to_default whether to convert to default (if there is default)
+#' @param auto_scale whether to auto-scale (if units are scalable)
 #' @return An S3 vector of class `chemunits`.
 #' @export
 #' @examples
 #' set_chemunits(c(0.25, 0.5, 0.75))
-set_chemunits <- function(x, units, ..., convert_to_default = FALSE, auto_scale = TRUE) {
+set_chemunits <- function(x, units, convert_to_default = FALSE, auto_scale = TRUE) {
   x |>
     # use quo and tidy eval to accommodate both standard and NSE
-    units::set_units(!!enexpr(units), !!!enquos(...)) |>
+    units::set_units(!!enexpr(units)) |>
     quo() |>
     eval_tidy() |>
     as_chemunits(
@@ -28,6 +31,7 @@ set_chemunits <- function(x, units, ..., convert_to_default = FALSE, auto_scale 
 set_cu <- set_chemunits
 
 #' convert to chemunits
+#' @param ... passed on to [units::as_units()]
 #' @keywords internal
 as_chemunits <- function(x = double(), ..., convert_to_default = FALSE, auto_scale = TRUE) {
   # if not `units`, convert to units and add `chemunits` class
@@ -52,11 +56,12 @@ add_chemunits_class <- function(x) {
 
 #' `chemunits` vector
 #'
-#' @param cu a chemunits vector
+#' @param x a chemunits vector
+#' @param units the units
 #' @return A `double` vector
 #' @export
-get_chemvalue <- function(cu, units, ...) {
-  check_required(cu)
+get_chemvalue <- function(x, units) {
+  check_required(x)
   if (missing(units)) {
     cli_abort(
       "{.var units} must be specified when retrieving a chemvalue to ensure
@@ -65,8 +70,11 @@ get_chemvalue <- function(cu, units, ...) {
       "i" = "while using {.var as.numeric()} works, it is not recommended"
     )
   }
+  # FIXME: implement
 }
 
+
+#' @describeIn get_chemvalue short-form for the `get_chemvalue` function
 #' @export
 get_cv <- get_chemvalue
 
@@ -123,7 +131,7 @@ vec_cast.units.chemunits <- vec_cast.chemunits.chemunits
 # S3 units::as_units/drop_units/units<- --------
 
 #' @export
-as_units.chemunits <- function(x) {
+as_units.chemunits <- function(x, ...) {
   class(x) <- setdiff(class(x), "chemunits")
   NextMethod()
 }
