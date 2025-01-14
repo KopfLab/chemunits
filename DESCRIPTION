@@ -13,7 +13,7 @@ BugReports: https://github.com/kopflab/chemunits/issues
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.2
 Depends:
     R (>= 4.1.0),
     units (>= 0.8.5)
@@ -23,10 +23,16 @@ Imports:
     lifecycle,
     stats,
     methods,
-    vctrs (>= 0.6.5)
+    vctrs (>= 0.6.5),
+    tibble,
+    tidyselect
 Suggests: 
     knitr,
     rmarkdown,
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    dplyr,
+    tidyr,
+    forcats,
+    ggplot2
 Config/testthat/edition: 3
 VignetteBuilder: knitr

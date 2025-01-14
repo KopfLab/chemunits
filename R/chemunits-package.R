@@ -16,8 +16,13 @@
 #' @import vctrs
 #' @importFrom lifecycle deprecated
 #' @importFrom methods is
-#' @importFrom stats median weighted.mean quantile
+#' @importFrom tibble tibble
 ## usethis namespace: end
 NULL
 
-# note: because `chemunits` depends on `units`, all units functions are automatically available and do not need to be re-exported here
+# re-exports
+
+#' @export
+tibble::tibble
+
+# note: because `chemunits` has `units` as Depends, all units functions are automatically available to the user and do not need to be re-exported here
