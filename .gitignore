@@ -15,6 +15,7 @@ Thumbs.db
 .RData
 .Ruserdata
 .Rproj.user/
+*.tar.gz
 packrat/lib*/
 packrat/src/
 # exclude Python and Jupyter temp files
