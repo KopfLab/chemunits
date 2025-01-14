@@ -5,7 +5,7 @@
 
 <!-- badges: start -->
 
-[![R-CMD-check](https://github.com/KopfLab/chemunits/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/KopfLab/chemunits/actions/workfl%20ows/R-CMD-check.yaml)
+[![R-CMD-check](https://github.com/KopfLab/chemunits/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/KopfLab/chemunits/actions/workflows/R-CMD-check.yaml)
 [![Codecov test
 coverage](https://codecov.io/gh/KopfLab/chemunits/graph/badge.svg)](https://app.codecov.io/gh/KopfLab/chemunits)
 [![Documentation](https://img.shields.io/badge/docs-online-green.svg)](https://chemunits.kopflab.org/)
@@ -14,9 +14,9 @@ coverage](https://codecov.io/gh/KopfLab/chemunits/graph/badge.svg)](https://app.
 ## About
 
 The **chemunits** package extends the functionality of the
-**[units](https://r-quantities.github.io/units/)** package (which makes
+**[units](https://r-quantities.github.io/units/)** package, which makes
 the incredibly powerful
-[udunits-2](https://github.com/Unidata/UDUNITS-2) API available in R) by
+[udunits-2](https://github.com/Unidata/UDUNITS-2) API available in R, by
 implementing two additional features:
 
 - automatic conversion of units generated from arithmetic
@@ -49,10 +49,9 @@ pak::pak("KopfLab/chemunits")
 
 ``` r
 library(chemunits)
-#> Loading required package: units
-#> udunits database from /Library/Frameworks/R.framework/Versions/4.4-x86_64/Resources/library/units/share/udunits/udunits2.xml
+
 # let chemunits know which units you prefer for different types of quantities
-# (you can always reuse the same list, just set it once at the beginning)
+# (you can always reuse the same list, just set it once at the beginning of a session)
 my_units <- c(
   "m", "g", "mol", "g/mol", # length, mass, amount, molecular weight
   "L", "M", "bar", "M/bar", # volume, molarity, pressure, solubility
@@ -62,14 +61,6 @@ chemunits_options(preferred_units = my_units, auto_scale_units = my_units)
 
 # create a tibble and run some fun calculations
 library(dplyr)
-#> 
-#> Attaching package: 'dplyr'
-#> The following objects are masked from 'package:stats':
-#> 
-#>     filter, lag
-#> The following objects are masked from 'package:base':
-#> 
-#>     intersect, setdiff, setequal, union
 df <- 
   # define 2 compounds
   tibble(
@@ -100,7 +91,9 @@ df # default tibble output
 #> 4 theobromine     180     0.01   0.0000556  200    0.000278   0.0000556
 #> 5 theobromine     180   100      0.556      200    2.78       0.556    
 #> 6 theobromine     180 10000     55.6        200  278.        55.6
-df |> knitr::kable() # nicely formatted wih units with the values
+
+# nicely formatted wih units with the values
+df |> knitr::kable()
 ```
 
 | compound    |            mw |     weight |        amount |        vol |        conc |     bla |
@@ -113,7 +106,8 @@ df |> knitr::kable() # nicely formatted wih units with the values
 | theobromine | 180 \[g/mol\] |   10 \[g\] | 55.6 \[mmol\] | 200 \[mL\] |  278 \[mM\] |  55.556 |
 
 ``` r
-df |> make_units_explicit() |> knitr::kable() # units in the header
+# with units in the header
+df |> make_units_explicit() |> knitr::kable() 
 ```
 
 | compound    | mw \[g/mol\] | weight \[mg\] | amount \[mmol\] | vol \[mL\] | conc \[mM\] |     bla |

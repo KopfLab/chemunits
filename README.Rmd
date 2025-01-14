@@ -16,15 +16,14 @@ knitr::opts_chunk$set(
 # chemunits
 
 <!-- badges: start -->
-[![R-CMD-check](https://github.com/KopfLab/chemunits/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/KopfLab/chemunits/actions/workfl
-ows/R-CMD-check.yaml)
+[![R-CMD-check](https://github.com/KopfLab/chemunits/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/KopfLab/chemunits/actions/workflows/R-CMD-check.yaml)
 [![Codecov test coverage](https://codecov.io/gh/KopfLab/chemunits/graph/badge.svg)](https://app.codecov.io/gh/KopfLab/chemunits)
 [![Documentation](https://img.shields.io/badge/docs-online-green.svg)](https://chemunits.kopflab.org/)
 <!-- badges: end -->
 
 ## About
 
-The **chemunits** package extends the functionality of the **[units](https://r-quantities.github.io/units/)** package (which makes the incredibly powerful [udunits-2](https://github.com/Unidata/UDUNITS-2) API available in R) by implementing two additional features:
+The **chemunits** package extends the functionality of the **[units](https://r-quantities.github.io/units/)** package, which makes the incredibly powerful [udunits-2](https://github.com/Unidata/UDUNITS-2) API available in R, by implementing two additional features:
 
  - automatic conversion of units generated from arithmetic (multiplication, division, etc.) to your preferred units
  - automatic scaling of numeric values with units to their ideal SI prefixes (nano-, milli-, kilo-, etc.)
@@ -44,10 +43,11 @@ pak::pak("KopfLab/chemunits")
 
 ## Show me some code
 
-```{r}
+```{r, message = FALSE}
 library(chemunits)
+
 # let chemunits know which units you prefer for different types of quantities
-# (you can always reuse the same list, just set it once at the beginning)
+# (you can always reuse the same list, just set it once at the beginning of a session)
 my_units <- c(
   "m", "g", "mol", "g/mol", # length, mass, amount, molecular weight
   "L", "M", "bar", "M/bar", # volume, molarity, pressure, solubility
@@ -78,6 +78,9 @@ df <-
 # see what this looks like in different print formats
 options(digits = 3)
 df # default tibble output
-df |> knitr::kable() # nicely formatted wih units with the values
-df |> make_units_explicit() |> knitr::kable() # units in the header
+
+# nicely formatted wih units with the values
+df |> knitr::kable()
+# with units in the header
+df |> make_units_explicit() |> knitr::kable() 
 ```
