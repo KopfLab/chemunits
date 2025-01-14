@@ -1,0 +1,381 @@
+---
+title: "Explore"
+date: "`r Sys.Date()`"
+output: 
+  rmarkdown::html_vignette:
+  html_document:
+    code_folding: show
+    number_sections: yes
+    df_print: paged
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+editor_options:
+  chunk_output_type: console
+vignette: >
+  %\VignetteIndexEntry{Explore}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+---
+
+```{r, message=FALSE}
+library(chemunits) # load the library
+```
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(fig.width = 7, fig.height = 4)
+```
+
+# What are chemunits?
+
+FIXME: point to [units::set_units()] documentation and [units::valid_udunits()]
+
+## Conversions
+
+```{r}
+# standard conversions
+set_cu(1, "N") |> set_cu("kN")
+set_cu(1, "V*A*s") |> set_cu("N*cm")
+
+# more complex (and fun but not always useful) 
+set_cu(1, "horsepower") |> set_cu("W")
+set_cu(1, "dram") |> set_cu("g")
+set_cu(1, "firkin") |> set_cu("L")
+set_cu(1, "fortnight") |> set_cu("days")
+set_cu(1, "fathom") |> set_cu("pica")
+
+# more complex and useful for chemistry
+set_cu(0, "degC") |> set_cu("degF")
+set_cu(32, "degF") |> set_cu("K")
+set_cu(1, "bar") |> set_cu("atm")
+set_cu(1, "bar") |> set_cu("psi")
+set_cu(1, "mbar") |> set_cu("mTorr")
+```
+
+## Preferred units
+
+```{r}
+chemunits_options(preferred_units = c("g", "1"))
+set_cu(1, "lb", convert_to_preferred = TRUE)
+
+
+set_units(15, "psi", convert_to_preferred = TRUE) # no preferred unit defined for pressure
+chemunits_options(preferred_units = c("g", "bar", "1"))
+set_units(15, "psi", convert_to_preferred = TRUE) # FIXME: why does this not work?
+```
+
+Preferred units are particularly convenient when converting units through multiplication and division of different units as described in more details in the [Arithmetic section](#arithmetic).
+
+## Auto-scaling
+
+# FIXME
+All chemical quantities in this package keep track of the units they represent with a base unit as detailed in the [quantities vignette](quantities.html) and a metric prefix. By default, the metric prefix is adjusted automatically to keep numeric values in a range close to 1. However, scaling to a specific prefix is easily achieved.
+
+and point to [units::valid_udunits_prefixes()]
+
+```{r}
+# automatic scaling
+chemunits_options(auto_scale_units = c("g", "L", "M"))
+set_cu(5000, "g") # automatically scaled to kg
+set_cu(100, "nL") * 1e5 # automatically scaled to mL
+set_cu(1e-4, "M") # automatically scaled to microM
+
+# no automatic scaling
+set_cu(0.5, "g", auto_scale = FALSE) # explicly stays g
+set_cu(5000, "J") # stays J because it wasn't defined to be included
+
+# enable it for J too
+chemunits_options(auto_scale_units = c("g", "L", "M", "J"))
+set_cu(5000, "J") # now it becomes kJ
+```
+
+## Formatting 
+
+To retrieve numeric values as text that includes their units, simply use `[base::format()]`. 
+
+```{r}
+# get quantity with unit
+set_cu(100, "mg") |> format()
+set_cu(0:10, "C") |> format()
+set_cu(760, "Torr") |> format()
+
+# by default autosales each value individually if the unit is scalalbe
+set_cu(c(0.1, 1, 1000), "g") |> format() # auto-scalable unit
+set_cu(c(0.1, 1, 1000), "N") |> format()
+
+# but the autoscaling can be turned off too
+set_cu(c(0.1, 1, 1000), "g") |> format(auto_scale = FALSE, scientific = FALSE)
+# or you can specify the desired unit
+set_cu(c(0.1, 1, 1000), "g") |> format(units = "kg", scientific = FALSE)
+# of course impossible conversion don't work
+try(set_cu(1, "kg") |> format(units = "J"))
+```
+
+The numeric value of a quantity can be retrieved via the `get_chemvalue()/get_cv()` function which converts to the requested units (if possible) and returns the numeric value in those units. 
+
+```{r}
+# FIXME: move this to the end
+set_cu(100, "mg") |> get_cv("mg") # returns 100
+set_cu(1, "kg") |> get_cv("lb") # can use any valid unit
+set_cu(0, "degC") |> get_cv("degF") # or use it for unit conversion
+set_cu(760, "Torr") |> get_cv("atm") # or use it for unit conversion
+try(set_cu(1, "kg") |> get_cv("M")) # impossible conversions fail
+```
+
+The units of a number can also be retrieved directly with the `get_units()` function for vectors, lists, as well as entire data frames (see details on the latter in the [data frames section](#data-frames)).
+
+```{r}
+set_cu(5000, "g") |> get_units()
+x <- list(
+  a = set_cu(5000, "g"),
+  b = 42,
+  c = set_cu(100, "mbar")
+) 
+x |> get_units()
+```
+
+# Arithmetic
+
+Several common arithmetic operations are implemented for easy inter-conversion between quantities. All arithmetic operations also automatically keep track of the units and metric prefixes for correct calculations.
+
+## Addition and Subtraction
+
+Quantities of the same type (e.g. masses, volumes, etc.) can be added or subtracted with proper interpration of the metric prefixes. The resulting quantity will be scaled to the best metric prefix as described above. Attempts to add or subtract non-matching quantities (e.g. mass + volume) or a quantity and a number without units will fail with an error to avoid unexpect behaviour and ambiguous calculations. 
+
+```{r}
+set_cu(0.003, "g") - set_cu(2, "mg") + set_cu(5, "µg") # 1.005 mg
+try(set_cu(1, "g") + set_cu(1, "L")) # not allowed
+try(set_cu(1, "g") + 1) # not allowed
+```
+
+## Multiplication / Division
+
+Quantities can be multipled/divided by a number. The resulting quantity will be scaled to the best metric prefix. This is most commonly used with multiplication/division by 1000.
+
+```{r}
+set_cu(1, "mg") * 1000 # convert mg into g
+set_cu(1, "mg") / 1e6 # convert mg into ng
+```
+
+Quantities can also be divided by another quantity of the same type (e.g. a mass by another mass) effectively canceling out the units resulting in a unitless ratio (symbolized by `[1]`) with the metric prefixes properly taken into consideration.
+
+```{r}
+# how many mg in a kg?
+set_cu(1, "kg") / set_cu(1, "mg")
+```
+
+Thanks to the underlying **[units](https://r-quantities.github.io/units/)** package and [UDUNITS-2](https://github.com/Unidata/UDUNITS-2) API, almost any unit calculations are possible. In cases where the result can be converted to one of your preferred units, that conversion and proper prefix scaling also happens automatically. A few examples below
+
+### Concentration (Molarity) = Amount / Volume
+
+```{r}
+# calculate molarity --> uh oh, no automatic converstion to M
+set_cu(5, "nmol") / set_cu(50, "mL") 
+
+# set preferred units
+chemunits_options(preferred_units = c("mol", "g", "g/mol", "M/bar", "M", "L", "1"))
+set_cu(5, "nmol") / set_cu(50, "mL") # calculation molarity
+set_cu(5, "nmol") / set_cu(100, "nM") # calculate volume
+set_cu(100, "nM") * set_cu(50, "mL") # calculate amount
+```
+
+### Concentration (Density) = Mass / Volume
+
+```{r}
+set_cu(5, "ng") / set_cu(50, "mL") # calculate density
+set_cu(5, "ng") / set_cu(100, "ng/L") # calculate volume
+set_cu(100, "ng/L") * set_cu(50, "mL") # calculate mass
+```
+
+### Amount = Mass / Molecular Mass
+
+```{r}
+set_cu(10, "g") / set_cu(50, "g/mol") # calculate amount
+set_cu(10, "g") / set_cu(200, "mmol") # calculate molecular weight
+set_cu(200, "mmol") * set_cu(50, "g/mol") # calculate mass
+```
+
+### Solubility = Molarity / Pressure
+
+```{r}
+set_cu(10, "mM") / set_cu(200, "mbar") # calculate solubility
+set_cu(10, "mM") / set_cu(50, "mM/bar") # calculate pressure
+set_cu(50, "mM/bar") * set_cu(200, "mbar") # calculate molarity
+```
+
+
+## Comparisons
+
+Quantities can be compared with all common logic operators (`>`, `>=`, `<`, `<=`, `==`, `!=`) taking the metric scaling properly into consideration. Attempts to compare non-matching quantities (e.g. mass & volume)  will fail with an error to avoid unexpect behaviour. Comparisons of quantities with numerics are allowed but it is important to be cautious about these since the metric scaling in quantities affects the numeric value.
+
+```{r}
+set_cu(5, "mg") < set_cu(1, "g")
+set_cu(5, "mg") > set_cu(10, "ng")
+set_cu(5, "mg") == set_cu(0.005, "g")
+set_cu(5, "mg") != set_cu(5, "g")
+try(set_cu(1, "mg") > set_cu(1, "L")) # not allowed (different quantities)
+```
+
+It is important to note that due to machine errors, the `==` is best avoided in favor of more reliable comparisons such as tests that check whether the difference between quantities is smaller than a tiny quantity:
+
+```{r}
+x <- set_cu(1, "mg")
+
+# whether it's *3 and then /3 or the other way around should be identical
+# but is not because of machine precision
+x*3/3 == x/3*3
+dplyr::near(x*3/3, x/3*3, tol = set_cu(1, "fg")) # the same within 1 femtogram
+```
+
+
+# Data Frames
+
+Units (and thus chemunits as well) are fully supported in dplyr type data frames (tibbles) and the units are displayed underneath the column headers, e.g. `[mL]`:
+
+```{r, message=FALSE}
+library(dplyr)
+tibble(
+  weight = set_cu(1:5, "mg"),
+  volume = set_cu(20, "mL")
+)
+```
+
+This also means that all arithmetic operations are allowed within data frames.
+
+```{r}
+df <- tibble(
+  id = 1:5,
+  weight = set_cu(1:5, "mg"),
+  vol = set_cu(20, "mL"),
+  mw = set_cu(500, "g/mol"),
+  amount = weight / mw,
+  conc = amount / vol
+)
+df
+```
+
+To get the columns' units use `get_units()`
+
+```{r}
+df |> get_units()
+```
+
+To make units of specific columns explicit, use `make_units_explicit()`
+
+```{r}
+# make all units columns explicit
+df |> make_units_explicit()
+
+# change the prefix and suffix
+df |> make_units_explicit(prefix = ".", suffix = "")
+
+# make a specific subset of columns explicit (using tidy select syntax)
+df |> make_units_explicit(weight:mw) # from weight to mw
+df |> make_units_explicit(-mw) # all but mw
+```
+
+To just straight-up remove the units from a tibble, use `drop_units()`:
+
+```{r}
+df |> drop_units()
+```
+
+# Plotting
+
+Quantities are automatically plotted with proper axis labels if used in `ggplot`.
+
+```{r}
+# example data set
+library(tidyr)
+df <- 
+  crossing(
+    conc = set_cu(c(0.5, 25), "mM"),
+    volume = set_cu(c(0.2, 90, 400), "mL")
+  ) |> 
+  mutate(
+    amount = conc * volume,
+    amount_text = format(amount)
+  )
+df
+```
+
+By default, units are included in the x and y axes titles if a quantity is being plotted. Discrete quantities used for other aesthetics can be converted to a factor using [forcats::fct_in_order()] which automatically includes the units and keeps the levels in order of appearance (using [factor()] rearranges them alphabetically).
+
+```{r}
+library(forcats)
+library(ggplot2)
+df |> 
+  mutate(conc = fct_inorder(format(conc))) |> 
+  ggplot() +
+  aes(x = volume, y = amount, color = conc) +
+  geom_line() +
+  facet_wrap(~conc, scales = "free")
+```
+
+Alternatively, the units can be specified for the axes using the [units::scale_x_units()] and [units::scale_y_units()] functions and the `units` parameter to the `format()` function. Units must be valid for the quantities that are plotted.
+
+```{r}
+df |> 
+  mutate(conc = factor(format(conc, units = "mM"))) |> 
+  ggplot() +
+  aes(x = volume, y = amount, color = conc) +
+  geom_line() +
+  facet_wrap(~conc, scales = "free") +
+  scale_x_units(unit = "L") +
+  scale_y_units(unit = "mmol")
+```
+
+# FIXME
+
+--> this does not work yet, have to implement scale_x_chemunits it seems :(
+
+Lastly, the `scale_x_set_cu()` and `scale_y_set_cu()` support all axis transformations supported by `scale_x_continuous()` and `scale_y_continuous()`. For example the `log10` transform can be used like this:
+
+```{r}
+# df |>
+#   mutate(conc = fct_inorder(format(conc))) |> 
+#   ggplot() +
+#   aes(x = volume, y = amount, color = conc) +
+#   geom_line() +
+#   facet_wrap(~conc, scales = "free") +
+#   scale_x_units(transform = "log10", auto_scale = TRUE) +
+#   scale_y_units(transform = "log10", auto_scale = TRUE)
+```
+
+# Concatenation
+
+Numbers with units can be concatenated using the regular `c()` function as long as they are compatible. Concatenation make sure that the metric prefix is taken into consideration and scales the new vector to the best metric of the median.
+
+```{r}
+c(
+  set_cu(1, "g"), 
+  set_cu(1:3, "mg"),
+  set_cu(2, "g")
+)
+```
+
+# Missing data
+
+Missing data (`NA`), empty vector (`numeric(0)`) and  infinity placeholders (`Inf`, `-Inf`) are fully supported and work the same as in any other R vectors.
+
+```{r}
+set_cu(c(10, NA, -Inf, Inf, numeric(0)), "mg")
+```
+
+# Defining new units
+
+You can add your own units thanks to [units::install_unit()] and then include it in your `preferred_units` and/or `auto_scale_units` to make full use of the chemunits functionality. For example, let's define the SI-accepted unit *Dalton* as an alternative for molecular weight (sometimes also called molar mass or molecular mass) with *1 Da = 1 g/mol*:
+
+```{r}
+# define new unit
+install_unit("Da", "g/mol")
+
+# test conversion
+set_cu(10, "g/mol") |> set_cu("Da")
+
+# include in preferred and auto-scale units
+chemunits_options(preferred_units = c("mol", "g", "Da", "M/bar", "M", "L", "1"))
+chemunits_options(auto_scale_units = c("mol", "g", "Da", "M/bar", "M", "L"))
+set_cu(10000, "g") / set_cu(1, "mol")
+```
+
