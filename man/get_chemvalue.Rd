@@ -18,7 +18,10 @@ get_cv(x, units)
 A \code{double} vector
 }
 \description{
-\code{chemunits} vector
+\code{\link[=get_chemvalue]{get_chemvalue()}} retrieves the ... FIXME
+}
+\details{
+The alternative \code{\link[=drop_units]{drop_units()}} (as well as the base function \code{\link[=as.numeric]{as.numeric()}}) simply returns the numeric value and drops the units. It can be useful in calculations but without specifying the output units like \code{\link[=get_chemvalue]{get_chemvalue()}} requires, it does not communicate intent as clearly and can lead to accidental mistakes such as not realizing what units a number has or dropping the units from an auto-scaling unit without realizing what SI prefix the unit has. The primary use of \code{\link[=drop_units]{drop_units()}} is in data frames/tibbles where it can drop the units of all columns at once.
 }
 \section{Functions}{
 \itemize{

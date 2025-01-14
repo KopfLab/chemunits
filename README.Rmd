@@ -24,19 +24,14 @@ ows/R-CMD-check.yaml)
 
 ## About
 
-The **chemunits** package expands the functionality of the **[units](https://r-quantities.github.io/units/)** package for routine calculations in chemical/biochemical/geochemical applications by implementing two additional features:
+The **chemunits** package extends the functionality of the **[units](https://r-quantities.github.io/units/)** package (which makes the incredibly powerful [udunits-2](https://github.com/Unidata/UDUNITS-2) API available in R) by implementing two additional features:
 
- - automatic convertion of
+ - automatic conversion of units generated from arithmetic (multiplication, division, etc.) to your preferred units
+ - automatic scaling of numeric values with units to their ideal SI prefixes (nano-, milli-, kilo-, etc.)
+ 
+This is helpful in all kinds of situations involving units of physical quantities and is particularly powerful in routine calculations for chemical/biochemical/geochemical applications (hence the name "chemunits"). In addition to these features, chemtools also defines molarity (`M = mol/L`) which is not part of the default [udunits-2](https://github.com/Unidata/UDUNITS-2) database given its widespread use in chemical labs and calculations.
 
-The **[microbialkitchen](https://microbialkitchen.kopflab.org/)** package is a collection of tools to simplify working with the chemical composition and speciation of defined culture media for microbial physiology and environmental microbiology research. It includes a wide range of general purpose functionality for chemical applications including built-in, data-frame-compatible [chemical quantities](https://microbialkitchen.kopflab.org/articles/quantities.html) (volume, mass, molarity, temperature, pressure, etc.) that automatically keep track of their units and metric scaling, as well as more specialized tools for the assembly and comparison of culturing media recipes, pH buffering strategies and aqueous speciation. All basic data types and operations are fully implemented, documented and ready to use. However, since the package is still in active development and some syntax and function names may change.
-
-https://r-quantities.github.io/units/
-
-https://github.com/Unidata/UDUNITS-2
-
-The goal of chemunits is to ...
-
-NOTE: this package has some strong opinions about what the important default units are for chemical applications and which units should be auto_scaled but this is very easy to change with the `chemunits_options()` if you have different preferences
+Check out the examples below and explore the use of chemunits further in [this vignette](https://chemunits.kopflab.org/articles/explore.html).
 
 ## Installation
 
@@ -47,11 +42,42 @@ You can install the development version of chemunits from [GitHub](https://githu
 pak::pak("KopfLab/chemunits")
 ```
 
-## Example
+## Show me some code
 
-This is a basic example which shows you how to solve a common problem:
-
-```{r example}
+```{r}
 library(chemunits)
-## basic example code
+# let chemunits know which units you prefer for different types of quantities
+# (you can always reuse the same list, just set it once at the beginning)
+my_units <- c(
+  "m", "g", "mol", "g/mol", # length, mass, amount, molecular weight
+  "L", "M", "bar", "M/bar", # volume, molarity, pressure, solubility
+  "J", "J/mol" # energy, gibbs free energy
+)
+chemunits_options(preferred_units = my_units, auto_scale_units = my_units)
+
+# create a tibble and run some fun calculations
+library(dplyr)
+df <- 
+  # define 2 compounds
+  tibble(
+    compound = c("NaOH", "theobromine"),
+    mw = set_cu(c(40, 180), "g/mol")
+  ) |>
+  # set a set of weights for each
+  cross_join(
+    tibble(weight = set_cu(c(0.01, 100, 10000), "mg"))
+  ) |>
+  # calculate the amount and concentration if dissolved
+  mutate(
+    amount = weight / mw,
+    vol = set_cu(200, "mL"),
+    conc = amount / vol,
+    bla = as.numeric(amount)
+  )
+
+# see what this looks like in different print formats
+options(digits = 3)
+df # default tibble output
+df |> knitr::kable() # nicely formatted wih units with the values
+df |> make_units_explicit() |> knitr::kable() # units in the header
 ```

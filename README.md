@@ -13,38 +13,27 @@ coverage](https://codecov.io/gh/KopfLab/chemunits/graph/badge.svg)](https://app.
 
 ## About
 
-The **chemunits** package expands the functionality of the
-**[units](https://r-quantities.github.io/units/)** package for routine
-calculations in chemical/biochemical/geochemical applications by
+The **chemunits** package extends the functionality of the
+**[units](https://r-quantities.github.io/units/)** package (which makes
+the incredibly powerful
+[udunits-2](https://github.com/Unidata/UDUNITS-2) API available in R) by
 implementing two additional features:
 
-- automatic convertion of
+- automatic conversion of units generated from arithmetic
+  (multiplication, division, etc.) to your preferred units
+- automatic scaling of numeric values with units to their ideal SI
+  prefixes (nano-, milli-, kilo-, etc.)
 
-The **[microbialkitchen](https://microbialkitchen.kopflab.org/)**
-package is a collection of tools to simplify working with the chemical
-composition and speciation of defined culture media for microbial
-physiology and environmental microbiology research. It includes a wide
-range of general purpose functionality for chemical applications
-including built-in, data-frame-compatible [chemical
-quantities](https://microbialkitchen.kopflab.org/articles/quantities.html)
-(volume, mass, molarity, temperature, pressure, etc.) that automatically
-keep track of their units and metric scaling, as well as more
-specialized tools for the assembly and comparison of culturing media
-recipes, pH buffering strategies and aqueous speciation. All basic data
-types and operations are fully implemented, documented and ready to use.
-However, since the package is still in active development and some
-syntax and function names may change.
+This is helpful in all kinds of situations involving units of physical
+quantities and is particularly powerful in routine calculations for
+chemical/biochemical/geochemical applications (hence the name
+“chemunits”). In addition to these features, chemtools also defines
+molarity (`M = mol/L`) which is not part of the default
+[udunits-2](https://github.com/Unidata/UDUNITS-2) database given its
+widespread use in chemical labs and calculations.
 
-<https://r-quantities.github.io/units/>
-
-<https://github.com/Unidata/UDUNITS-2>
-
-The goal of chemunits is to …
-
-NOTE: this package has some strong opinions about what the important
-default units are for chemical applications and which units should be
-auto_scaled but this is very easy to change with the
-`chemunits_options()` if you have different preferences
+Check out the examples below and explore the use of chemunits further in
+[this vignette](https://chemunits.kopflab.org/articles/explore.html).
 
 ## Installation
 
@@ -56,13 +45,82 @@ You can install the development version of chemunits from
 pak::pak("KopfLab/chemunits")
 ```
 
-## Example
-
-This is a basic example which shows you how to solve a common problem:
+## Show me some code
 
 ``` r
 library(chemunits)
 #> Loading required package: units
 #> udunits database from /Library/Frameworks/R.framework/Versions/4.4-x86_64/Resources/library/units/share/udunits/udunits2.xml
-## basic example code
+# let chemunits know which units you prefer for different types of quantities
+# (you can always reuse the same list, just set it once at the beginning)
+my_units <- c(
+  "m", "g", "mol", "g/mol", # length, mass, amount, molecular weight
+  "L", "M", "bar", "M/bar", # volume, molarity, pressure, solubility
+  "J", "J/mol" # energy, gibbs free energy
+)
+chemunits_options(preferred_units = my_units, auto_scale_units = my_units)
+
+# create a tibble and run some fun calculations
+library(dplyr)
+#> 
+#> Attaching package: 'dplyr'
+#> The following objects are masked from 'package:stats':
+#> 
+#>     filter, lag
+#> The following objects are masked from 'package:base':
+#> 
+#>     intersect, setdiff, setequal, union
+df <- 
+  # define 2 compounds
+  tibble(
+    compound = c("NaOH", "theobromine"),
+    mw = set_cu(c(40, 180), "g/mol")
+  ) |>
+  # set a set of weights for each
+  cross_join(
+    tibble(weight = set_cu(c(0.01, 100, 10000), "mg"))
+  ) |>
+  # calculate the amount and concentration if dissolved
+  mutate(
+    amount = weight / mw,
+    vol = set_cu(200, "mL"),
+    conc = amount / vol,
+    bla = as.numeric(amount)
+  )
+
+# see what this looks like in different print formats
+options(digits = 3)
+df # default tibble output
+#> # A tibble: 6 × 7
+#>   compound         mw   weight      amount  vol        conc         bla
+#>   <chr>       [g/mol]     [mg]      [mmol] [mL]        [mM]       <dbl>
+#> 1 NaOH             40     0.01   0.00025    200    0.00125    0.00025  
+#> 2 NaOH             40   100      2.5        200   12.5        2.5      
+#> 3 NaOH             40 10000    250          200 1250        250        
+#> 4 theobromine     180     0.01   0.0000556  200    0.000278   0.0000556
+#> 5 theobromine     180   100      0.556      200    2.78       0.556    
+#> 6 theobromine     180 10000     55.6        200  278.        55.6
+df |> knitr::kable() # nicely formatted wih units with the values
 ```
+
+| compound    |            mw |     weight |        amount |        vol |        conc |     bla |
+|:------------|--------------:|-----------:|--------------:|-----------:|------------:|--------:|
+| NaOH        |  40 \[g/mol\] |  10 \[µg\] |  250 \[nmol\] | 200 \[mL\] | 1.25 \[µM\] |   0.000 |
+| NaOH        |  40 \[g/mol\] | 100 \[mg\] |  2.5 \[mmol\] | 200 \[mL\] | 12.5 \[mM\] |   2.500 |
+| NaOH        |  40 \[g/mol\] |   10 \[g\] |  250 \[mmol\] | 200 \[mL\] |  1.25 \[M\] | 250.000 |
+| theobromine | 180 \[g/mol\] |  10 \[µg\] | 55.6 \[nmol\] | 200 \[mL\] |  278 \[nM\] |   0.000 |
+| theobromine | 180 \[g/mol\] | 100 \[mg\] |  556 \[µmol\] | 200 \[mL\] | 2.78 \[mM\] |   0.556 |
+| theobromine | 180 \[g/mol\] |   10 \[g\] | 55.6 \[mmol\] | 200 \[mL\] |  278 \[mM\] |  55.556 |
+
+``` r
+df |> make_units_explicit() |> knitr::kable() # units in the header
+```
+
+| compound    | mw \[g/mol\] | weight \[mg\] | amount \[mmol\] | vol \[mL\] | conc \[mM\] |     bla |
+|:------------|-------------:|--------------:|----------------:|-----------:|------------:|--------:|
+| NaOH        |           40 |         1e-02 |           0.000 |        200 |       0.001 |   0.000 |
+| NaOH        |           40 |         1e+02 |           2.500 |        200 |      12.500 |   2.500 |
+| NaOH        |           40 |         1e+04 |         250.000 |        200 |    1250.000 | 250.000 |
+| theobromine |          180 |         1e-02 |           0.000 |        200 |       0.000 |   0.000 |
+| theobromine |          180 |         1e+02 |           0.556 |        200 |       2.778 |   0.556 |
+| theobromine |          180 |         1e+04 |          55.556 |        200 |     277.778 |  55.556 |

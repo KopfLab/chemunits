@@ -5,16 +5,16 @@
 \alias{set_cu}
 \title{\code{chemunits} vector}
 \usage{
-set_chemunits(x, units, convert_to_default = FALSE, auto_scale = TRUE)
+set_chemunits(x, units, convert_to_preferred = FALSE, auto_scale = TRUE)
 
-set_cu(x, units, convert_to_default = FALSE, auto_scale = TRUE)
+set_cu(x, units, convert_to_preferred = FALSE, auto_scale = TRUE)
 }
 \arguments{
 \item{x}{A numeric vector}
 
 \item{units}{units}
 
-\item{convert_to_default}{whether to convert to default (if there is default)}
+\item{convert_to_preferred}{whether to convert to default (if there is default)}
 
 \item{auto_scale}{whether to auto-scale (if units are scalable)}
 }

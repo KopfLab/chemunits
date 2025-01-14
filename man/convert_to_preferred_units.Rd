@@ -4,7 +4,10 @@
 \alias{convert_to_preferred_units}
 \title{automatically convert to default units if any fit (\code{defaults} would be an option in units_options)}
 \usage{
-convert_to_preferred_units(x, defaults = get_chemunits_option("preferred_units"))
+convert_to_preferred_units(
+  x,
+  defaults = get_chemunits_option("preferred_units")
+)
 }
 \arguments{
 \item{x}{units object}

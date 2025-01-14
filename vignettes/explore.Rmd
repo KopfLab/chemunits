@@ -234,10 +234,16 @@ Units (and thus chemunits as well) are fully supported in dplyr type data frames
 
 ```{r, message=FALSE}
 library(dplyr)
-tibble(
+df <- tibble(
   weight = set_cu(1:5, "mg"),
   volume = set_cu(20, "mL")
 )
+df
+
+# or for formatted output in notebooks
+df |> knitr::kable()
+# or with explicit units in the header
+df |> make_units_explicit() |> knitr::kable()
 ```
 
 This also means that all arithmetic operations are allowed within data frames.

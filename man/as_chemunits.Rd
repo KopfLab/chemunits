@@ -4,7 +4,12 @@
 \alias{as_chemunits}
 \title{convert to chemunits}
 \usage{
-as_chemunits(x = double(), ..., convert_to_default = FALSE, auto_scale = TRUE)
+as_chemunits(
+  x = double(),
+  ...,
+  convert_to_preferred = FALSE,
+  auto_scale = TRUE
+)
 }
 \arguments{
 \item{...}{passed on to \code{\link[units:units]{units::as_units()}}}

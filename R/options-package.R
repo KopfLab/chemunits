@@ -56,11 +56,11 @@ get_pkg_options <- function() {
   list(
     #' - `preferred_units` (character vector of units): the default units that new units (i.e. resulting from calculations) should be converted to. Default: `"1"` (i.e. units that cancel themselves and should be dimensionless are converted to unitless). The order does not matter except if units can be interconverted from each other (e.g. `"L"` and `"m^3"`) in which case the first one will be used (with a warning).
     preferred_units = define_pkg_option(
-      default = c("mol", "M", "L", "1"), check_fn = do_units_exist
+      default = c("mol", "g", "g/mol", "M/bar", "M", "L", "1"), check_fn = do_units_exist
     ),
     #' - `auto_scale_units` (character vector of units): the units whose best SI prefix (e.g. nano/n, micro/u, milli/m, kilo/k, etc) should be determined automatically based on the median value of a vector in this unit. Default: `character(0)` (i.e. no units are automatically scaled).
     auto_scale_units = define_pkg_option(
-      default = c("mol", "M", "L"), check_fn = do_units_exist
+      default = c("mol", "g", "g/mol", "M/bar", "M", "L"), check_fn = do_units_exist
     )
   )
 }
