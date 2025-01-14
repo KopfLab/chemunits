@@ -16,6 +16,10 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/explore.html">Explore</a></li>
+  </ul></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/kopflab/chemunits/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
@@ -65,7 +69,7 @@
     <h2 id="options-for-the-chemunits-package">Options for the chemunits package<a class="anchor" aria-label="anchor" href="#options-for-the-chemunits-package"></a></h2>
 
 
-<ul><li><p><code>default_units</code> (character vector of units): the default units that new units (i.e. resulting from calculations) should be converted to. Default: <code>"1"</code> (i.e. units that cancel themselves and should be dimensionless are converted to unitless). The order does not matter except if units can be interconverted from each other (e.g. <code>"L"</code> and <code>"m^3"</code>) in which case the first one will be used (with a warning).</p></li>
+<ul><li><p><code>preferred_units</code> (character vector of units): the default units that new units (i.e. resulting from calculations) should be converted to. Default: <code>"1"</code> (i.e. units that cancel themselves and should be dimensionless are converted to unitless). The order does not matter except if units can be interconverted from each other (e.g. <code>"L"</code> and <code>"m^3"</code>) in which case the first one will be used (with a warning).</p></li>
 <li><p><code>auto_scale_units</code> (character vector of units): the units whose best SI prefix (e.g. nano/n, micro/u, milli/m, kilo/k, etc) should be determined automatically based on the median value of a vector in this unit. Default: <code>character(0)</code> (i.e. no units are automatically scaled).</p></li>
 </ul></div>
 
@@ -74,14 +78,14 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Default setting(s):</span></span></span>
 <span class="r-in"><span><span class="va">old</span> <span class="op">&lt;-</span> <span class="fu">chemunits_options</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">old</span> <span class="co"># original options</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $default_units</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "mol" "M"   "L"   "1"  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $preferred_units</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "mol"   "g"     "g/mol" "M/bar" "M"     "L"     "1"    </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $auto_scale_units</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "mol" "M"   "L"  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "mol"   "g"     "g/mol" "M/bar" "M"     "L"    </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-in"><span><span class="fu">get_chemunits_option</span><span class="op">(</span><span class="st">"default_units"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "mol" "M"   "L"   "1"  </span>
+<span class="r-in"><span><span class="fu">get_chemunits_option</span><span class="op">(</span><span class="st">"preferred_units"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "mol"   "g"     "g/mol" "M/bar" "M"     "L"     "1"    </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># with this, there is no default unit defined for energy or volume</span></span></span>
 <span class="r-in"><span><span class="co"># so the units are not simplified</span></span></span>
@@ -95,7 +99,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1 [1]</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Change for the duration of the session:</span></span></span>
-<span class="r-in"><span><span class="fu">chemunits_options</span><span class="op">(</span>default_units <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"J"</span>, <span class="st">"L"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">chemunits_options</span><span class="op">(</span>preferred_units <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"J"</span>, <span class="st">"L"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># now W*s is recognized as energy and cm mm^2 as a volume and both are</span></span></span>
 <span class="r-in"><span><span class="co"># automatically converted to the specified default units</span></span></span>
@@ -104,9 +108,9 @@
 <span class="r-in"><span><span class="fu"><a href="set_chemunits.html">set_cu</a></span><span class="op">(</span><span class="fl">1</span>, <span class="st">"m"</span><span class="op">)</span> <span class="op">*</span> <span class="fu"><a href="set_chemunits.html">set_cu</a></span><span class="op">(</span><span class="fl">1</span>, <span class="st">"mm^2"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1 [mL]</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># however since "1" was no longer included in the `default_units`, </span></span></span>
+<span class="r-in"><span><span class="co"># however since "1" was no longer included in the `preferred_units`, </span></span></span>
 <span class="r-in"><span><span class="co"># dimensionless units were no longer simplified (thus it is advisable</span></span></span>
-<span class="r-in"><span><span class="co"># to always include "1" in the `default_units` option)</span></span></span>
+<span class="r-in"><span><span class="co"># to always include "1" in the `preferred_units` option)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="set_chemunits.html">set_cu</a></span><span class="op">(</span><span class="fl">1</span>, <span class="st">"W*s"</span><span class="op">)</span> <span class="op">/</span> <span class="fu"><a href="set_chemunits.html">set_cu</a></span><span class="op">(</span><span class="fl">1</span>, <span class="st">"J"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1 [W*s/J]</span>
 <span class="r-in"><span></span></span>

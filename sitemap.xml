@@ -2,15 +2,20 @@
 <url><loc>https://chemunits.kopflab.org/404.html</loc></url>
 <url><loc>https://chemunits.kopflab.org/LICENSE-text.html</loc></url>
 <url><loc>https://chemunits.kopflab.org/LICENSE.html</loc></url>
+<url><loc>https://chemunits.kopflab.org/articles/explore.html</loc></url>
+<url><loc>https://chemunits.kopflab.org/articles/index.html</loc></url>
 <url><loc>https://chemunits.kopflab.org/authors.html</loc></url>
 <url><loc>https://chemunits.kopflab.org/index.html</loc></url>
 <url><loc>https://chemunits.kopflab.org/reference/as_chemunits.html</loc></url>
 <url><loc>https://chemunits.kopflab.org/reference/auto_scale_units.html</loc></url>
 <url><loc>https://chemunits.kopflab.org/reference/chemunits-package.html</loc></url>
 <url><loc>https://chemunits.kopflab.org/reference/chemunits_options.html</loc></url>
-<url><loc>https://chemunits.kopflab.org/reference/convert_to_default_units.html</loc></url>
+<url><loc>https://chemunits.kopflab.org/reference/convert_to_preferred_units.html</loc></url>
 <url><loc>https://chemunits.kopflab.org/reference/get_chemvalue.html</loc></url>
+<url><loc>https://chemunits.kopflab.org/reference/get_units.html</loc></url>
 <url><loc>https://chemunits.kopflab.org/reference/index.html</loc></url>
+<url><loc>https://chemunits.kopflab.org/reference/make_units_explicit.html</loc></url>
+<url><loc>https://chemunits.kopflab.org/reference/reexports.html</loc></url>
 <url><loc>https://chemunits.kopflab.org/reference/set_chemunits.html</loc></url>
 </urlset>
 
